@@ -16,7 +16,10 @@ class UserController extends BaseController
     // Read
     public function index()
     {
-        $data['users'] = $this->userModel->findAll();
+        $data = [
+            'users' => $this->userModel->paginate(10),
+            'pager' => $this->userModel->pager
+        ];
 
         return view('users/index', $data);
     }

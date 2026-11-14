@@ -7,6 +7,31 @@
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+    function confirmDelete(event, button) {
+        event.preventDefault();
+
+        const form = button.closest('form');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This user will be permanently deleted!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+
+        return false;
+    }
+</script>
+
 <body class="bg-light">
 
     <div class="container mt-5">
@@ -27,6 +52,16 @@
             </script>
         <?php endif; ?>
 
+        <?php if (session()->getFlashdata('error')): ?>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: <?= json_encode(session()->getFlashdata('error')) ?>
+                });
+            </script>
+        <?php endif; ?>
+
         <table class="table table-bordered table-striped bg-white table-hover text-center">
             <thead>
                 <tr>
@@ -38,29 +73,29 @@
             </thead>
 
             <tbody>
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?= esc($user['id']) ?></td>
-                        <td><?= esc($user['name']) ?></td>
-                        <td><?= esc($user['email']) ?></td>
-                        <td>
-                            <a href="/users/edit/<?= esc($user['id']) ?>"
-                                class="btn btn-warning btn-sm">Edit</a>
+                <?php if (!empty($users)): ?>
+                    <?php foreach ($users as $user): ?>
+                        <tr>
+                            <td><?= esc($user['id']) ?></td>
+                            <td><?= esc($user['name']) ?></td>
+                            <td><?= esc($user['email']) ?></td>
+                            <td>
+                                <a href="/users/edit/<?= esc($user['id']) ?>"
+                                    class="btn btn-warning btn-sm">Edit</a>
 
-                            <form action="/users/delete/<?= esc($user['id']) ?>"
-                                method="post" class="d-inline">
-                                <?= csrf_field() ?>
-                                <button type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Delete this user?')">
-                                    Delete
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-
-                <?php if (empty($users)): ?>
+                                <form action="/users/delete/<?= esc($user['id']) ?>"
+                                    method="post" class="d-inline">
+                                    <?= csrf_field() ?>
+                                    <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirmDelete(event, this)">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
                         <td colspan="4" class="text-center">No users found.</td>
                     </tr>
@@ -68,6 +103,10 @@
             </tbody>
         </table>
 
+        <!-- Pagination Links -->
+        <div class="mt-4">
+            <?= $pager->links('default', 'bootstrap_custom') ?>
+        </div>
     </div>
 </body>
 
