@@ -30,9 +30,17 @@ class UserController extends BaseController
     // Store
     public function store()
     {
+        $name = $this->request->getPost('name');
+        $email = $this->request->getPost('email');
+
+        if (empty($name) || empty($email)) {
+            return redirect()->back()
+                ->with('error', 'Name and Email are required!');
+        }
+
         $this->userModel->save([
-            'name'  => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
+            'name'  => $name,
+            'email' => $email,
         ]);
 
         return redirect()->to('/users')

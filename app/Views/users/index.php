@@ -5,6 +5,7 @@
     <title>Users CRUD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body class="bg-light">
 
@@ -16,9 +17,14 @@
         </div>
 
         <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert alert-success">
-                <?= esc(session()->getFlashdata('success')) ?>
-            </div>
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: <?= json_encode(session()->getFlashdata('success')) ?>,
+                    confirmButtonText: 'OK'
+                });
+            </script>
         <?php endif; ?>
 
         <table class="table table-bordered table-striped bg-white table-hover text-center">
